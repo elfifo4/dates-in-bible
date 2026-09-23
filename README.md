@@ -14,7 +14,11 @@ Thanks
 - Mentions of a year alone, a month alone, durations and ages are **not** included.
 - Every occurrence belongs to exactly one verse. A verse with several dates appears once per date.
 - When the verse states only the day and the month is known from the context ("בּוֹ", "לַחֹדֶשׁ הַזֶּה"),
-  the verse is still included, and only the words that appear in that verse are highlighted.
+  the verse is still included, and only the words that appear in that verse are highlighted
+  (`month_source=context` in `data/dates.csv`).
+- A few verses state the day but take the month from a parallel verse or from the commentators
+  (2 Kings 25:3, Ezekiel 32:17, Ezekiel 40:1). They are included with `month_source=inferred`
+  and a note explaining where the month comes from.
 - The highlighted words are the day and the month, and the year when it is part of the same phrase
   (up to the king's name or other reference point, without titles such as "מֶלֶךְ בָּבֶל").
 
