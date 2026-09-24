@@ -2,6 +2,8 @@
 
 ## Description
 
+https://elfifo4.github.io/dates-in-bible/
+
 This repository contains json files of all the explicit dates (day and month) in the Bible and their occurrences within the verses.  
 Every occurrence points to a single verse and to the indexes of the words that form the date inside that verse.  
 If you find any mistake, please open up a new issue.<br/>

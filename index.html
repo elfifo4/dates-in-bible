@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>תאריכים בתנ״ך</title>
+    <meta name="description" content="כל התאריכים המפורשים (יום וחודש) בתנ״ך, לפי חודשים וימים, עם הפסוקים המלאים.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f7f4ee;
+            --surface: #fffdf9;
+            --ink: #2b2620;
+            --muted: #7a7064;
+            --line: #e4ddd1;
+            --accent: #8a5a1f;
+            --accent-soft: #f1e4cf;
+            --mark: #fbe7b5;
+            --chip: #f3eee5;
+            --focus: #b57a2c;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #1a1714;
+                --surface: #231f1b;
+                --ink: #ece5da;
+                --muted: #a39887;
+                --line: #3a332c;
+                --accent: #e0b070;
+                --accent-soft: #3b2e1f;
+                --mark: #5a4318;
+                --chip: #2e2823;
+                --focus: #e0b070;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #1a1714;
+            --surface: #231f1b;
+            --ink: #ece5da;
+            --muted: #a39887;
+            --line: #3a332c;
+            --accent: #e0b070;
+            --accent-soft: #3b2e1f;
+            --mark: #5a4318;
+            --chip: #2e2823;
+            --focus: #e0b070;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Rubik", system-ui, sans-serif;
+            line-height: 1.5;
+        }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+
+        header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 24px; }
+        h1 { font-family: "Noto Serif Hebrew", serif; font-size: clamp(28px, 5vw, 40px); margin: 0; font-weight: 700; }
+        .sub { color: var(--muted); margin: 4px 0 0; }
+        .links { display: flex; gap: 16px; font-size: 14px; }
+        a { color: var(--accent); }
+
+        .months {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .month {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .month.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+        .month-head {
+            all: unset;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .month-name { font-family: "Noto Serif Hebrew", serif; font-weight: 700; font-size: 20px; }
+        .month-meta { color: var(--muted); font-size: 13px; }
+        .days { display: flex; flex-wrap: wrap; gap: 6px; }
+        .day {
+            all: unset;
+            cursor: pointer;
+            min-width: 36px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: var(--chip);
+            text-align: center;
+            font-family: "Noto Serif Hebrew", serif;
+            font-size: 15px;
+            position: relative;
+        }
+        .day sup { font-family: "Rubik", sans-serif; font-size: 10px; color: var(--muted); margin-inline-start: 2px; }
+        .day:hover, .month-head:hover .month-name { color: var(--accent); }
+        .day.active { background: var(--accent); color: var(--surface); }
+        .day.active sup { color: var(--surface); }
+        .day:focus-visible, .month-head:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+        #results { margin-top: 32px; scroll-margin-top: 16px; }
+        .results-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+        .results-head h2 { font-family: "Noto Serif Hebrew", serif; margin: 0; font-size: 26px; }
+        .results-head .count { color: var(--muted); font-size: 14px; }
+        .tools { display: flex; gap: 12px; align-items: center; font-size: 14px; }
+        .tools label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+
+        ol.verses { list-style: none; padding: 0; margin: 0; }
+        .verse { padding: 16px 0; border-bottom: 1px solid var(--line); }
+        .ref { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; margin-bottom: 6px; }
+        .ref strong { font-weight: 500; }
+        .ref .date { color: var(--muted); font-size: 14px; }
+        .note { font-size: 12px; background: var(--accent-soft); color: var(--accent); border-radius: 6px; padding: 1px 8px; }
+        .text { font-family: "Noto Serif Hebrew", serif; font-size: 21px; line-height: 1.9; margin: 0; }
+        .text b { font-weight: 700; background: var(--mark); border-radius: 4px; padding: 0 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+        .empty, .error { color: var(--muted); padding: 24px 0; }
+        footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+
+        @media (max-width: 520px) {
+            .months { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .month { padding: 10px; }
+            .month-name { font-size: 18px; }
+            .text { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div>
+            <h1>תאריכים בתנ״ך</h1>
+            <p class="sub" id="summary">טוען…</p>
+        </div>
+        <div class="links">
+            <a href="https://github.com/elfifo4/dates-in-bible">GitHub</a>
+            <a id="json-link" href="#">JSON</a>
+        </div>
+    </header>
+
+    <section class="months" id="months" aria-label="חודשים"></section>
+
+    <section id="results" aria-live="polite"></section>
+
+    <footer>
+        החודשים נמנים מניסן, כמו בתנ״ך עצמו. נמצאה טעות? <a href="https://github.com/elfifo4/dates-in-bible/issues">פתחו issue</a>.
+    </footer>
+</div>
+
+<script>
+    const MONTHS = ["ניסן", "אייר", "סיון", "תמוז", "אב", "אלול", "תשרי", "חשוון", "כסלו", "טבת", "שבט", "אדר"];
+    const RAW = "https://raw.githubusercontent.com/elfifo4/dates-in-bible/master/minified/";
+    const TEAMIM = /[֑-ֽ֯׀׃-׆]/g;
+    const NIKUD = /[ְ-ׇּֿׁׂ]/g;
+
+    let rows = [];
+    let current = null; // {month, day?}
+    let showTeamim = true;
+    let showNikud = true;
+
+    try {
+        showTeamim = localStorage.getItem("teamim") !== "0";
+        showNikud = localStorage.getItem("nikud") !== "0";
+    } catch (e) { /* storage unavailable */ }
+
+    function hebrewNumber(n) {
+        if (n === 15) return "ט״ו";
+        if (n === 16) return "ט״ז";
+        const tens = ["", "י", "כ", "ל"][Math.floor(n / 10)];
+        const ones = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"][n % 10];
+        const s = tens + ones;
+        return s.length === 1 ? s + "׳" : s.slice(0, -1) + "״" + s.slice(-1);
+    }
+
+    /** Minimal RFC 4180 parser — quoted fields, "" escapes. */
+    function parseCsv(text) {
+        const out = [];
+        let row = [], field = "", quoted = false;
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            if (quoted) {
+                if (ch === '"' && text[i + 1] === '"') { field += '"'; i++; }
+                else if (ch === '"') quoted = false;
+                else field += ch;
+            } else if (ch === '"') quoted = true;
+            else if (ch === ",") { row.push(field); field = ""; }
+            else if (ch === "\n") { row.push(field); out.push(row); row = []; field = ""; }
+            else if (ch !== "\r") field += ch;
+        }
+        if (field || row.length) { row.push(field); out.push(row); }
+        const [header, ...body] = out;
+        return body.filter(r => r.length === header.length).map(r => Object.fromEntries(header.map((h, i) => [h, r[i]])));
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+    }
+
+    /** The CSV text only contains <b>/</b> tags; escape everything else. */
+    function verseHtml(text) {
+        let t = text;
+        if (!showTeamim) t = t.replace(TEAMIM, "");
+        if (!showNikud) t = t.replace(NIKUD, "");
+        return escapeHtml(t).replace(/&lt;b&gt;/g, "<b>").replace(/&lt;\/b&gt;/g, "</b>") + "׃";
+    }
+
+    function renderMonths() {
+        const box = document.getElementById("months");
+        box.innerHTML = "";
+        MONTHS.forEach((name, i) => {
+            const month = i + 1;
+            const inMonth = rows.filter(r => r.month === month);
+            const days = [...new Set(inMonth.map(r => r.day))].sort((a, b) => a - b);
+
+            const card = document.createElement("div");
+            card.className = "month" + (current && current.month === month && !current.day ? " active" : "");
+
+            const head = document.createElement("button");
+            head.className = "month-head";
+            head.innerHTML = `<span class="month-name">${name}</span><span class="month-meta">${inMonth.length} מופעים</span>`;
+            head.addEventListener("click", () => go(month));
+            card.appendChild(head);
+
+            const dayBox = document.createElement("div");
+            dayBox.className = "days";
+            days.forEach(day => {
+                const n = inMonth.filter(r => r.day === day).length;
+                const chip = document.createElement("button");
+                chip.className = "day" + (current && current.month === month && current.day === day ? " active" : "");
+                chip.innerHTML = hebrewNumber(day) + (n > 1 ? `<sup>${n}</sup>` : "");
+                chip.title = `${hebrewNumber(day)} ב${name} · ${n} ${n === 1 ? "פסוק" : "פסוקים"}`;
+                chip.addEventListener("click", () => go(month, day));
+                dayBox.appendChild(chip);
+            });
+            card.appendChild(dayBox);
+            box.appendChild(card);
+        });
+    }
+
+    function renderResults() {
+        const box = document.getElementById("results");
+        const jsonLink = document.getElementById("json-link");
+        if (!current) {
+            box.innerHTML = `<p class="empty">בחרו יום או חודש כדי לראות את הפסוקים.</p>`;
+            jsonLink.href = RAW + "all.json";
+            return;
+        }
+        const {month, day} = current;
+        const list = rows.filter(r => r.month === month && (!day || r.day === day));
+        const verses = new Set(list.map(r => `${r.b}/${r.c}/${r.v}`)).size;
+        const title = day ? `${hebrewNumber(day)} ב${MONTHS[month - 1]}` : `חודש ${MONTHS[month - 1]}`;
+        jsonLink.href = RAW + (day ? `${month}/${day}.json` : `${month}/all.json`);
+
+        box.innerHTML = `
+            <div class="results-head">
+                <div>
+                    <h2>${title}</h2>
+                    <span class="count">${list.length} ${list.length === 1 ? "מופע" : "מופעים"} ב־${verses} ${verses === 1 ? "פסוק" : "פסוקים"}</span>
+                </div>
+                <div class="tools">
+                    <label><input type="checkbox" id="nikud" ${showNikud ? "checked" : ""}> ניקוד</label>
+                    <label><input type="checkbox" id="teamim" ${showTeamim ? "checked" : ""}> טעמים</label>
+                </div>
+            </div>
+            <ol class="verses">${list.map(r => `
+                <li class="verse">
+                    <div class="ref">
+                        <strong>${escapeHtml(r.book)} ${escapeHtml(r.chapter)}, ${escapeHtml(r.verse)}</strong>
+                        ${day ? "" : `<span class="date">${hebrewNumber(r.day)} ב${MONTHS[r.month - 1]}</span>`}
+                        ${r.note ? `<span class="note">${escapeHtml(r.note)}</span>` : ""}
+                    </div>
+                    <p class="text">${verseHtml(r.text)}</p>
+                </li>`).join("")}
+            </ol>`;
+
+        const toggle = (id, set) => document.getElementById(id).addEventListener("change", e => {
+            set(e.target.checked);
+            try { localStorage.setItem(id, e.target.checked ? "1" : "0"); } catch (err) { /* ignore */ }
+            renderResults();
+        });
+        toggle("nikud", v => showNikud = v);
+        toggle("teamim", v => showTeamim = v);
+    }
+
+    function go(month, day) {
+        const hash = day ? `#${month}/${day}` : `#${month}`;
+        if (location.hash === hash) route(true);
+        else location.hash = hash;
+    }
+
+    function route(scroll) {
+        const m = location.hash.match(/^#(\d{1,2})(?:\/(\d{1,2}))?$/);
+        current = m ? {month: +m[1], day: m[2] ? +m[2] : undefined} : null;
+        if (current && (current.month < 1 || current.month > 12)) current = null;
+        renderMonths();
+        renderResults();
+        if (scroll && current) document.getElementById("results").scrollIntoView({behavior: "smooth", block: "start"});
+    }
+
+    fetch("data/dates.csv")
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+        .then(text => {
+            rows = parseCsv(text.replace(/^﻿/, "")).map(r => ({
+                ...r, b: +r.b, c: +r.c, v: +r.v, month: +r.month, day: +r.day,
+            })).sort((x, y) => x.b - y.b || x.c - y.c || x.v - y.v);
+            const verses = new Set(rows.map(r => `${r.b}/${r.c}/${r.v}`)).size;
+            document.getElementById("summary").textContent = `${rows.length} תאריכים ב־${verses} פסוקים, לפי חודש ויום`;
+            window.addEventListener("hashchange", () => route(true));
+            route(false);
+        })
+        .catch(() => {
+            document.getElementById("summary").textContent = "";
+            document.getElementById("results").innerHTML = `<p class="error">לא הצלחתי לטעון את הנתונים.</p>`;
+        });
+</script>
+</body>
+</html>
